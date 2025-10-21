@@ -14,15 +14,20 @@ const app = express();
 connectDB();
 
 // Middleware
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-  credentials: true
-}));
+// Parse JSON and URL-encoded bodies
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// File upload
 app.use(fileUpload({
   useTempFiles: true,
   tempFileDir: '/tmp/'
+}));
+
+// CORS only for /api routes
+app.use('/api', cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true
 }));
 
 // Routes
@@ -35,7 +40,7 @@ app.use('/api/analytics', require('./routes/analyticsRoutes'));
 app.use('/api/weather', require('./routes/weatherRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes'));
 
-// Health check route
+// Health check route (no CORS needed)
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'FarmNiti API is running' });
 });
@@ -50,11 +55,5 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📍 Environment: ${process.env.NODE_ENV}`);
-});
-
+// Export app for Vercel serverless deployment
 module.exports = app;
