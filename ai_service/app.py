@@ -17,8 +17,15 @@ load_dotenv()
 app = Flask(__name__)
 
 # Read allowed frontend URL from environment
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
-CORS(app, resources={r"/analyze": {"origins": FRONTEND_URL}}, supports_credentials=True)
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+
+# ✅ Correct CORS setup
+CORS(
+    app,
+    origins=FRONTEND_URL,
+    supports_credentials=True,
+    methods=["GET", "POST", "OPTIONS"]
+)
 
 # App configuration
 PORT = int(os.getenv("PORT", 5000))
