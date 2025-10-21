@@ -14,23 +14,23 @@ const app = express();
 connectDB();
 
 // Middleware
-// Parse JSON and URL-encoded bodies
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// File upload
+// File upload middleware
 app.use(fileUpload({
   useTempFiles: true,
   tempFileDir: '/tmp/'
 }));
 
-// CORS only for /api routes
+// Enable CORS only for /api routes
 app.use('/api', cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
 
-// Routes
+// --- API Routes ---
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/missions', require('./routes/missionRoutes'));
@@ -40,7 +40,7 @@ app.use('/api/analytics', require('./routes/analyticsRoutes'));
 app.use('/api/weather', require('./routes/weatherRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes'));
 
-// Health check route (no CORS needed)
+// Health check route (optional)
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'FarmNiti API is running' });
 });
@@ -55,5 +55,5 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Export app for Vercel serverless deployment
+// --- Export app for Vercel ---
 module.exports = app;
