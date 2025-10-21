@@ -16,12 +16,7 @@ connectDB();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// File upload middleware
-app.use(fileUpload({
-  useTempFiles: true,
-  tempFileDir: '/tmp/'
-}));
+app.use(fileUpload({ useTempFiles: true, tempFileDir: '/tmp/' }));
 
 // Enable CORS only for /api routes
 app.use('/api', cors({
@@ -40,7 +35,12 @@ app.use('/api/analytics', require('./routes/analyticsRoutes'));
 app.use('/api/weather', require('./routes/weatherRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes'));
 
-// Health check route (optional)
+// Root route (optional) - displays message instead of 404
+app.get('/', (req, res) => {
+  res.send('🚀 FarmNiti API is live! Use /api routes.');
+});
+
+// Health check route
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'FarmNiti API is running' });
 });
@@ -55,5 +55,5 @@ app.use((err, req, res, next) => {
   });
 });
 
-// --- Export app for Vercel ---
+// Export app for Vercel serverless deployment
 module.exports = app;
