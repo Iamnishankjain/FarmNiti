@@ -20,7 +20,7 @@ app.use(fileUpload({ useTempFiles: true, tempFileDir: '/tmp/' }));
 
 // Enable CORS only for /api routes
 app.use('/api', cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
@@ -35,7 +35,7 @@ app.use('/api/analytics', require('./routes/analyticsRoutes'));
 app.use('/api/weather', require('./routes/weatherRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes'));
 
-// Root route (optional) - displays message instead of 404
+// Root route
 app.get('/', (req, res) => {
   res.send('🚀 FarmNiti API is live! Use /api routes.');
 });
@@ -55,5 +55,13 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Export app for Vercel serverless deployment
+// Start server only if running locally
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+  });
+}
+
+// Export app for serverless deployment (Vercel)
 module.exports = app;
