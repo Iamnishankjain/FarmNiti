@@ -27,6 +27,7 @@ import ManageRewards from './pages/authority/ManageRewards';
 // Components
 import PrivateRoute from './components/common/PrivateRoute';
 import Navbar from './components/common/Navbar';
+import Weather from './pages/farmer/Weather';
 
 function App() {
   return (
@@ -49,6 +50,15 @@ function App() {
                   </PrivateRoute>
                 }
               />
+              <Route
+                path="/farmer/weather"
+                element={
+                  <PrivateRoute role="farmer">
+                    <Weather />
+                  </PrivateRoute>
+                }
+              />
+
               <Route
                 path="/farmer/missions"
                 element={

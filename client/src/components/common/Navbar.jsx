@@ -25,6 +25,7 @@ const Navbar = () => {
   const farmerLinks = [
     { path: '/farmer/dashboard', label: t('common.dashboard') },
     { path: '/farmer/missions', label: t('farmer.missions') },
+    { path: '/farmer/weather', label: t('weather.title') },
     { path: '/farmer/ai-doctor', label: t('farmer.aiDoctor') },
     { path: '/farmer/social', label: t('farmer.social') },
     { path: '/farmer/leaderboard', label: t('farmer.leaderboard') },
