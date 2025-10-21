@@ -6,17 +6,21 @@ import torch
 from PIL import Image
 import io
 import numpy as np
+import json
 from utils.train_model import CropDiseaseModel
 from utils.image_processor import ImageProcessor
 from utils.disease_database import DISEASE_DATABASE
-import json
 
 # Load .env variables
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
 
+# Read allowed frontend URL from environment
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
+CORS(app, resources={r"/analyze": {"origins": FRONTEND_URL}}, supports_credentials=True)
+
+# App configuration
 PORT = int(os.getenv("PORT", 5000))
 DEBUG = os.getenv("FLASK_DEBUG", "False") == "True"
 NUM_CLASSES = int(os.getenv("NUM_CLASSES", 15))
@@ -48,7 +52,6 @@ def analyze_crop():
         # Validate image
         is_valid, msg = ImageProcessor.validate_image(img_np)
         if not is_valid:
-            print(f"Warning: image validation failed: {msg}")
             return jsonify({'success': False, 'message': msg}), 400
 
         # Process image
@@ -61,13 +64,11 @@ def analyze_crop():
             outputs = model.model(image_tensor)
             if outputs.ndim == 1:
                 outputs = outputs.unsqueeze(0)
-            
-            # Apply softmax only if model outputs logits
             probs = torch.softmax(outputs, dim=1)
             confidence_tensor, pred_idx_tensor = torch.max(probs, dim=1)
-            
+
             pred_idx = pred_idx_tensor.item()
-            confidence = round(float(confidence_tensor.item()) * 100, 2)  # 0-100%
+            confidence = round(float(confidence_tensor.item()) * 100, 2)
             disease_key = class_labels[pred_idx]
 
         # Get disease info
